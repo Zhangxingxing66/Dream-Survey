@@ -1,0 +1,8 @@
+
+> dream-survey-client@0.1.0 dev
+> next dev
+
+[32mready[39m - started server on 0.0.0.0:3000, url: http://localhost:3000
+[35mevent[39m - compiled client and server successfully in 1416 ms (170 modules)
+[36mwait[39m  - compiling / (client and server)...
+[35mevent[39m - compiled client and server successfully in 439 ms (180 modules)

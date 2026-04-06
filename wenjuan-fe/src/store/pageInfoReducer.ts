@@ -6,7 +6,13 @@ export type PageInfoType = {
   desc?: string
   js?: string
   css?: string
+  updatedAt?: string
   isPublished?: boolean
+  publishedVersionId?: string
+  publishedAt?: string
+  versionCount?: number
+  versionId?: string
+  versionNumber?: number
 }
 
 const INIT_STATE: PageInfoType = {
@@ -14,6 +20,13 @@ const INIT_STATE: PageInfoType = {
   desc: '',
   js: '',
   css: '',
+  updatedAt: '',
+  isPublished: false,
+  publishedVersionId: '',
+  publishedAt: '',
+  versionCount: 0,
+  versionId: '',
+  versionNumber: 0,
 }
 
 const pageInfoSlice = createSlice({
@@ -21,16 +34,22 @@ const pageInfoSlice = createSlice({
   initialState: INIT_STATE,
   reducers: {
     resetPageInfo: (state: PageInfoType, action: PayloadAction<PageInfoType>) => {
-      return action.payload
+      return {
+        ...INIT_STATE,
+        ...action.payload,
+      }
     },
 
-    // 修改标题
+    updatePageInfo: produce((draft: PageInfoType, action: PayloadAction<Partial<PageInfoType>>) => {
+      Object.assign(draft, action.payload)
+    }),
+
     changePageTitle: produce((draft: PageInfoType, action: PayloadAction<string>) => {
       draft.title = action.payload
     }),
   },
 })
 
-export const { resetPageInfo, changePageTitle } = pageInfoSlice.actions
+export const { resetPageInfo, updatePageInfo, changePageTitle } = pageInfoSlice.actions
 
 export default pageInfoSlice.reducer

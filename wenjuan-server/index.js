@@ -54,48 +54,6 @@ function fail(ctx, msg, errno = 1001) {
   }
 }
 
-async function ensureDbFile() {
-  await fs.mkdir(DB_DIR, { recursive: true })
-
-  try {
-    await fs.access(DB_FILE)
-  } catch {
-    await fs.writeFile(DB_FILE, JSON.stringify(DEFAULT_DB, null, 2), 'utf8')
-  }
-}
-
-async function readDb() {
-  await ensureDbFile()
-
-  const content = await fs.readFile(DB_FILE, 'utf8')
-  const parsed = content ? JSON.parse(content) : {}
-
-  return {
-    ...DEFAULT_DB,
-    ...parsed,
-    users: Array.isArray(parsed.users) ? parsed.users : [],
-    sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
-    questions: Array.isArray(parsed.questions) ? parsed.questions : [],
-    answers: Array.isArray(parsed.answers) ? parsed.answers : [],
-  }
-}
-
-async function writeDb(db) {
-  await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), 'utf8')
-}
-
-function updateDb(mutator) {
-  const task = writeChain.then(async () => {
-    const db = await readDb()
-    const result = await mutator(db)
-    await writeDb(db)
-    return result
-  })
-
-  writeChain = task.catch(() => undefined)
-  return task
-}
-
 function parseBoolean(value) {
   if (value === true || value === 'true') return true
   if (value === false || value === 'false') return false
@@ -121,30 +79,29 @@ function getCurrentUser(ctx, db) {
 function requireUser(ctx, db) {
   const user = getCurrentUser(ctx, db)
   if (!user) {
-    fail(ctx, '请先登录', 401)
+    fail(ctx, 'Please login first', 401)
     return null
   }
 
   return user
 }
 
-function normaliseQuestion(question) {
-  return {
-    ...clone(question),
-    _id: question.id,
-  }
+function getNextVersionNumber(versions = []) {
+  return versions.reduce((max, item) => Math.max(max, Number(item.versionNumber) || 0), 0) + 1
 }
 
-function normaliseQuestionListItem(question) {
+function createVersionSnapshotFromQuestion(question, versionNumber = getNextVersionNumber(question.versions)) {
   return {
-    _id: question.id,
-    id: question.id,
-    title: question.title,
-    isStar: Boolean(question.isStar),
-    isPublished: Boolean(question.isPublished),
-    isDeleted: Boolean(question.isDeleted),
-    answerCount: Number(question.answerCount || 0),
-    createdAt: question.createdAt,
+    id: createId('version'),
+    versionNumber,
+    createdAt: formatDate(),
+    title: question.title || '',
+    desc: question.desc || '',
+    js: question.js || '',
+    css: question.css || '',
+    componentList: clone(question.componentList || []),
+    answerCount: 0,
+    statSummary: createVersionStatSummary(question.componentList || []),
   }
 }
 
@@ -153,22 +110,22 @@ function createDefaultComponentList() {
     {
       fe_id: createId('cmp'),
       type: 'questionInfo',
-      title: '问卷信息',
+      title: 'Question Info',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '个人问卷',
-        desc: '请根据实际情况填写问卷内容。',
+        title: 'Personal Survey',
+        desc: 'Please complete the questionnaire according to your real situation.',
       },
     },
     {
       fe_id: createId('cmp'),
       type: 'questionTitle',
-      title: '标题',
+      title: 'Title',
       isHidden: false,
       isLocked: false,
       props: {
-        text: '欢迎参与本次调查',
+        text: 'Welcome to this survey',
         level: 1,
         isCenter: false,
       },
@@ -176,60 +133,60 @@ function createDefaultComponentList() {
     {
       fe_id: createId('cmp'),
       type: 'questionInput',
-      title: '输入框',
+      title: 'Input',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '你的姓名',
-        placeholder: '请输入姓名',
+        title: 'Your name',
+        placeholder: 'Please enter your name',
       },
     },
     {
       fe_id: createId('cmp'),
       type: 'questionInput',
-      title: '输入框',
+      title: 'Input',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '联系方式',
-        placeholder: '请输入手机号或微信',
+        title: 'Contact',
+        placeholder: 'Please enter phone or WeChat',
       },
     },
     {
       fe_id: createId('cmp'),
       type: 'questionTextarea',
-      title: '多行输入',
+      title: 'Textarea',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '补充说明',
-        placeholder: '可以填写你的补充想法',
+        title: 'Additional notes',
+        placeholder: 'You can add more details here',
       },
     },
     {
       fe_id: createId('cmp'),
       type: 'questionParagraph',
-      title: '段落',
+      title: 'Paragraph',
       isHidden: false,
       isLocked: false,
       props: {
-        text: '本问卷仅用于个人收集信息。\n感谢你的配合。',
+        text: 'This survey is only used for collecting information. Thank you for your cooperation.',
         isCenter: false,
       },
     },
     {
       fe_id: createId('cmp'),
       type: 'questionRadio',
-      title: '单选',
+      title: 'Single Choice',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '你最常使用的沟通方式是？',
+        title: 'Which communication method do you use most often?',
         isVertical: false,
         options: [
-          { value: 'phone', text: '电话' },
-          { value: 'wechat', text: '微信' },
-          { value: 'email', text: '邮箱' },
+          { value: 'phone', text: 'Phone' },
+          { value: 'wechat', text: 'WeChat' },
+          { value: 'email', text: 'Email' },
         ],
         value: '',
       },
@@ -237,16 +194,16 @@ function createDefaultComponentList() {
     {
       fe_id: createId('cmp'),
       type: 'questionCheckbox',
-      title: '多选',
+      title: 'Multiple Choice',
       isHidden: false,
       isLocked: false,
       props: {
-        title: '你希望收到哪些内容？',
+        title: 'What content would you like to receive?',
         isVertical: false,
         list: [
-          { value: 'news', text: '活动通知', checked: false },
-          { value: 'product', text: '产品更新', checked: false },
-          { value: 'tips', text: '使用技巧', checked: false },
+          { value: 'news', text: 'Event notices', checked: false },
+          { value: 'product', text: 'Product updates', checked: false },
+          { value: 'tips', text: 'Usage tips', checked: false },
         ],
       },
     },
@@ -259,18 +216,209 @@ function createQuestion(userId) {
   return {
     id: createId('question'),
     userId,
-    title: '未命名问卷',
-    desc: '请完善问卷描述',
+    title: 'Untitled Survey',
+    desc: 'Please complete the survey description',
     js: '',
     css: '',
     isDeleted: false,
     isPublished: false,
+    publishedVersionId: '',
+    publishedAt: '',
     isStar: false,
     answerCount: 0,
     createdAt: now,
     updatedAt: now,
     componentList: createDefaultComponentList(),
+    versions: [],
   }
+}
+
+function createVersionStatSummary(componentList = []) {
+  const summary = {}
+
+  componentList.forEach(component => {
+    const adapter = getStatAdapterByType(component?.type)
+    if (!adapter) return
+
+    summary[component.fe_id] = {
+      componentId: component.fe_id,
+      type: component.type,
+      entries: adapter.createEntries(component),
+    }
+  })
+
+  return summary
+}
+
+function normalizeVersion(version, fallbackVersionNumber = 1) {
+  return {
+    id: typeof version?.id === 'string' && version.id ? version.id : createId('version'),
+    versionNumber: Number(version?.versionNumber) || fallbackVersionNumber,
+    createdAt: String(version?.createdAt || formatDate()),
+    title: String(version?.title || ''),
+    desc: String(version?.desc || ''),
+    js: String(version?.js || ''),
+    css: String(version?.css || ''),
+    componentList: Array.isArray(version?.componentList) ? clone(version.componentList) : [],
+    answerCount: version?.answerCount == null ? null : Number(version.answerCount || 0),
+    statSummary:
+      version?.statSummary && typeof version.statSummary === 'object' ? clone(version.statSummary) : null,
+  }
+}
+
+function normalizeQuestionRecord(question) {
+  const normalized = {
+    ...clone(question),
+    title: String(question?.title || ''),
+    desc: String(question?.desc || ''),
+    js: String(question?.js || ''),
+    css: String(question?.css || ''),
+    isDeleted: Boolean(question?.isDeleted),
+    isStar: Boolean(question?.isStar),
+    answerCount: Number(question?.answerCount || 0),
+    createdAt: String(question?.createdAt || formatDate()),
+    updatedAt: String(question?.updatedAt || question?.createdAt || formatDate()),
+    componentList: Array.isArray(question?.componentList) ? clone(question.componentList) : [],
+    versions: Array.isArray(question?.versions)
+      ? question.versions.map((item, index) => normalizeVersion(item, index + 1))
+      : [],
+    publishedVersionId: String(question?.publishedVersionId || ''),
+    publishedAt: String(question?.publishedAt || ''),
+  }
+
+  if (!normalized.versions.length && Boolean(question?.isPublished)) {
+    const legacyVersion = createVersionSnapshotFromQuestion(normalized, 1)
+    legacyVersion.createdAt = normalized.updatedAt || normalized.createdAt
+    normalized.versions = [legacyVersion]
+    normalized.publishedVersionId = legacyVersion.id
+    normalized.publishedAt = normalized.publishedAt || legacyVersion.createdAt
+  }
+
+  const currentVersionExists = normalized.versions.some(item => item.id === normalized.publishedVersionId)
+  if (!currentVersionExists) {
+    normalized.publishedVersionId = ''
+    normalized.publishedAt = ''
+  }
+
+  normalized.isPublished = Boolean(normalized.publishedVersionId)
+  return normalized
+}
+
+function normalizeAnswerRecord(answer, questionsById) {
+  const question = questionsById.get(answer?.questionId)
+  const fallbackVersionId = question?.publishedVersionId || ''
+
+  return {
+    ...clone(answer),
+    id: String(answer?.id || createId('answer')),
+    questionId: String(answer?.questionId || ''),
+    versionId: String(answer?.versionId || fallbackVersionId),
+    createdAt: String(answer?.createdAt || formatDate()),
+    answerList: Array.isArray(answer?.answerList)
+      ? answer.answerList
+          .filter(item => item && item.componentId)
+          .map(item => ({
+            componentId: String(item.componentId),
+            value: Array.isArray(item.value) ? item.value.join(',') : String(item.value || ''),
+          }))
+      : [],
+  }
+}
+
+function normalizeDb(db = {}) {
+  const normalizedQuestions = Array.isArray(db.questions)
+    ? db.questions.map(item => normalizeQuestionRecord(item))
+    : []
+  const questionsById = new Map(normalizedQuestions.map(item => [item.id, item]))
+  const normalizedAnswers = Array.isArray(db.answers)
+    ? db.answers.map(item => normalizeAnswerRecord(item, questionsById))
+    : []
+
+  const answersByVersion = new Map()
+  normalizedAnswers.forEach(answer => {
+    const key = getVersionAnswerBucketKey(answer.questionId, answer.versionId)
+    const current = answersByVersion.get(key) || []
+    current.push(answer)
+    answersByVersion.set(key, current)
+  })
+
+  normalizedQuestions.forEach(question => {
+    question.versions = question.versions.map(version => {
+      const needsRebuild = version.answerCount == null || version.statSummary == null
+      const nextVersion = {
+        ...version,
+        answerCount: Number(version.answerCount || 0),
+        statSummary: normalizeVersionStatSummary(version.componentList, version.statSummary),
+      }
+
+      if (!needsRebuild) return nextVersion
+
+      const answerBucket =
+        answersByVersion.get(getVersionAnswerBucketKey(question.id, version.id)) || []
+
+      nextVersion.answerCount = 0
+      nextVersion.statSummary = createVersionStatSummary(nextVersion.componentList)
+      answerBucket.forEach(answer => {
+        applyAnswerToVersionStats(nextVersion, answer)
+      })
+
+      return nextVersion
+    })
+  })
+
+  return {
+    users: Array.isArray(db.users) ? db.users : [],
+    sessions: Array.isArray(db.sessions) ? db.sessions : [],
+    questions: normalizedQuestions,
+    answers: normalizedAnswers,
+  }
+}
+
+function hasDbChanged(a, b) {
+  return JSON.stringify(a) !== JSON.stringify(b)
+}
+
+async function ensureDbFile() {
+  await fs.mkdir(DB_DIR, { recursive: true })
+
+  try {
+    await fs.access(DB_FILE)
+  } catch {
+    await fs.writeFile(DB_FILE, JSON.stringify(DEFAULT_DB, null, 2), 'utf8')
+  }
+
+  const content = await fs.readFile(DB_FILE, 'utf8')
+  const parsed = content ? JSON.parse(content) : DEFAULT_DB
+  const normalized = normalizeDb(parsed)
+
+  if (hasDbChanged(parsed, normalized)) {
+    await fs.writeFile(DB_FILE, JSON.stringify(normalized, null, 2), 'utf8')
+  }
+}
+
+async function readDb() {
+  await ensureDbFile()
+
+  const content = await fs.readFile(DB_FILE, 'utf8')
+  const parsed = content ? JSON.parse(content) : DEFAULT_DB
+
+  return normalizeDb(parsed)
+}
+
+async function writeDb(db) {
+  await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), 'utf8')
+}
+
+function updateDb(mutator) {
+  const task = writeChain.then(async () => {
+    const db = await readDb()
+    const result = await mutator(db)
+    await writeDb(db)
+    return result
+  })
+
+  writeChain = task.catch(() => undefined)
+  return task
 }
 
 function resetComponentIds(componentList = []) {
@@ -290,12 +438,102 @@ function parseCheckboxValue(value) {
     .filter(Boolean)
 }
 
-function getComponent(question, componentId) {
-  return (question.componentList || []).find(item => item.fe_id === componentId) || null
+const statAdapterMap = {
+  questionRadio: {
+    createEntries(component) {
+      const options = Array.isArray(component?.props?.options) ? component.props.options : []
+      return options.map(item => ({
+        value: String(item.value),
+        name: String(item.text || item.value || ''),
+        count: 0,
+      }))
+    },
+    accumulate(summary, rawValue) {
+      const current = summary.entries.find(item => item.value === String(rawValue))
+      if (!current) return
+      current.count = Number(current.count || 0) + 1
+    },
+    toStat(summary) {
+      return (summary.entries || []).map(item => ({
+        name: item.name,
+        count: Number(item.count || 0),
+      }))
+    },
+  },
+  questionCheckbox: {
+    createEntries(component) {
+      const list = Array.isArray(component?.props?.list) ? component.props.list : []
+      return list.map(item => ({
+        value: String(item.value),
+        name: String(item.text || item.value || ''),
+        count: 0,
+      }))
+    },
+    accumulate(summary, rawValue) {
+      parseCheckboxValue(rawValue).forEach(value => {
+        const current = summary.entries.find(item => item.value === String(value))
+        if (!current) return
+        current.count = Number(current.count || 0) + 1
+      })
+    },
+    toStat(summary) {
+      return (summary.entries || []).map(item => ({
+        name: item.name,
+        count: Number(item.count || 0),
+      }))
+    },
+  },
 }
 
-function getDisplayValue(question, componentId, rawValue) {
-  const component = getComponent(question, componentId)
+function getStatAdapterByType(type) {
+  return statAdapterMap[type] || null
+}
+
+function normalizeVersionStatSummary(componentList = [], rawSummary) {
+  const nextSummary = createVersionStatSummary(componentList)
+  if (!rawSummary || typeof rawSummary !== 'object') return nextSummary
+
+  Object.keys(nextSummary).forEach(componentId => {
+    const current = nextSummary[componentId]
+    const existing = rawSummary[componentId]
+    if (!existing || !Array.isArray(existing.entries)) return
+
+    const counterMap = new Map(
+      existing.entries.map(item => [String(item.value), Number(item.count || 0)])
+    )
+
+    current.entries = current.entries.map(item => ({
+      ...item,
+      count: counterMap.get(String(item.value)) || 0,
+    }))
+  })
+
+  return nextSummary
+}
+
+function getVersionAnswerBucketKey(questionId, versionId) {
+  return `${questionId}::${versionId}`
+}
+
+function applyAnswerToVersionStats(version, answer) {
+  version.answerCount = Number(version.answerCount || 0) + 1
+
+  ;(answer.answerList || []).forEach(item => {
+    const summary = version.statSummary?.[item.componentId]
+    if (!summary) return
+
+    const adapter = getStatAdapterByType(summary.type)
+    if (!adapter) return
+    adapter.accumulate(summary, item.value)
+  })
+}
+
+function getComponent(questionLike, componentId) {
+  return (questionLike.componentList || []).find(item => item.fe_id === componentId) || null
+}
+
+function getDisplayValue(questionLike, componentId, rawValue) {
+  const component = getComponent(questionLike, componentId)
   if (!component) return rawValue
 
   const { type, props = {} } = component
@@ -321,59 +559,135 @@ function getDisplayValue(question, componentId, rawValue) {
   return rawValue
 }
 
-function buildStatRow(question, answer) {
+function buildStatRow(questionLike, answer) {
   const row = { _id: answer.id }
 
   ;(answer.answerList || []).forEach(item => {
-    row[item.componentId] = getDisplayValue(question, item.componentId, item.value)
+    row[item.componentId] = getDisplayValue(questionLike, item.componentId, item.value)
   })
 
   return row
 }
 
-function buildComponentStat(question, componentId, answers) {
-  const component = getComponent(question, componentId)
-  if (!component) return []
+function getVersionComponentStat(version, componentId) {
+  if (!version?.statSummary) return []
 
-  const { type, props = {} } = component
+  const summary = version.statSummary[componentId]
+  if (!summary) return []
 
-  if (type === 'questionRadio') {
-    const options = Array.isArray(props.options) ? props.options : []
-    const counter = new Map(options.map(item => [item.value, 0]))
+  const adapter = getStatAdapterByType(summary.type)
+  if (!adapter) return []
 
-    answers.forEach(answer => {
-      const current = (answer.answerList || []).find(item => item.componentId === componentId)
-      if (!current || !counter.has(current.value)) return
-      counter.set(current.value, counter.get(current.value) + 1)
-    })
+  return adapter.toStat(summary)
+}
 
-    return options.map(item => ({
-      name: item.text,
-      count: counter.get(item.value) || 0,
-    }))
+function getPublishedVersion(question, versionId = question.publishedVersionId) {
+  if (!versionId) return null
+  return question.versions.find(item => item.id === versionId) || null
+}
+
+function getPublishedQuestionLike(question, versionId = question.publishedVersionId) {
+  const version = getPublishedVersion(question, versionId)
+  if (!version) return null
+
+  return {
+    id: question.id,
+    title: version.title,
+    desc: version.desc,
+    js: version.js,
+    css: version.css,
+    componentList: clone(version.componentList || []),
+  }
+}
+
+function normaliseQuestionDraft(question) {
+  return {
+    _id: question.id,
+    id: question.id,
+    title: question.title,
+    desc: question.desc,
+    js: question.js,
+    css: question.css,
+    isDeleted: Boolean(question.isDeleted),
+    isPublished: Boolean(question.publishedVersionId),
+    publishedVersionId: question.publishedVersionId || '',
+    publishedAt: question.publishedAt || '',
+    versionCount: Array.isArray(question.versions) ? question.versions.length : 0,
+    isStar: Boolean(question.isStar),
+    answerCount: Number(question.answerCount || 0),
+    createdAt: question.createdAt,
+    updatedAt: question.updatedAt,
+    componentList: clone(question.componentList || []),
+  }
+}
+
+function normaliseQuestionPublished(question, versionId = question.publishedVersionId) {
+  const published = getPublishedQuestionLike(question, versionId)
+
+  if (!published) {
+    return {
+      _id: question.id,
+      id: question.id,
+      title: question.title,
+      desc: question.desc,
+      js: '',
+      css: '',
+      isDeleted: Boolean(question.isDeleted),
+      isPublished: false,
+      publishedVersionId: '',
+      versionId: '',
+      versionNumber: 0,
+      publishedAt: '',
+      versionCount: Array.isArray(question.versions) ? question.versions.length : 0,
+      componentList: [],
+    }
   }
 
-  if (type === 'questionCheckbox') {
-    const list = Array.isArray(props.list) ? props.list : []
-    const counter = new Map(list.map(item => [item.value, 0]))
+  const version = getPublishedVersion(question, versionId)
 
-    answers.forEach(answer => {
-      const current = (answer.answerList || []).find(item => item.componentId === componentId)
-      if (!current) return
-
-      parseCheckboxValue(current.value).forEach(value => {
-        if (!counter.has(value)) return
-        counter.set(value, counter.get(value) + 1)
-      })
-    })
-
-    return list.map(item => ({
-      name: item.text,
-      count: counter.get(item.value) || 0,
-    }))
+  return {
+    _id: question.id,
+    id: question.id,
+    title: published.title,
+    desc: published.desc,
+    js: published.js,
+    css: published.css,
+    isDeleted: Boolean(question.isDeleted),
+    isPublished: true,
+    publishedVersionId: question.publishedVersionId || '',
+    versionId: version ? version.id : '',
+    versionNumber: version ? version.versionNumber : 0,
+    publishedAt: question.publishedAt || (version ? version.createdAt : ''),
+    versionCount: Array.isArray(question.versions) ? question.versions.length : 0,
+    componentList: published.componentList,
   }
+}
 
-  return []
+function normaliseQuestionListItem(question) {
+  return {
+    _id: question.id,
+    id: question.id,
+    title: question.title,
+    isStar: Boolean(question.isStar),
+    isPublished: Boolean(question.publishedVersionId),
+    isDeleted: Boolean(question.isDeleted),
+    answerCount: Number(question.answerCount || 0),
+    createdAt: question.createdAt,
+    publishedAt: question.publishedAt || '',
+    versionCount: Array.isArray(question.versions) ? question.versions.length : 0,
+  }
+}
+
+function normaliseVersionList(question) {
+  return [...(question.versions || [])]
+    .sort((a, b) => Number(b.versionNumber) - Number(a.versionNumber))
+    .map(item => ({
+      id: item.id,
+      versionNumber: item.versionNumber,
+      title: item.title,
+      createdAt: item.createdAt,
+      isCurrentPublished: item.id === question.publishedVersionId,
+    }))
 }
 
 async function parseBody(req) {
@@ -437,11 +751,11 @@ app.use(async (ctx, next) => {
     await next()
 
     if (ctx.body == null) {
-      fail(ctx, '接口不存在', 404)
+      fail(ctx, 'API not found', 404)
     }
   } catch (err) {
     console.error(err)
-    fail(ctx, err.message || '服务异常', 500)
+    fail(ctx, err.message || 'Server error', 500)
   }
 })
 
@@ -472,13 +786,13 @@ router.post('/api/user/register', async ctx => {
   const trimmedPassword = String(password).trim()
 
   if (!trimmedUsername || !trimmedPassword) {
-    fail(ctx, '用户名和密码不能为空')
+    fail(ctx, 'Username and password are required')
     return
   }
 
   const result = await updateDb(db => {
     const exists = db.users.some(item => item.username === trimmedUsername)
-    if (exists) return { error: '用户名已存在' }
+    if (exists) return { error: 'Username already exists' }
 
     db.users.push({
       id: createId('user'),
@@ -509,7 +823,7 @@ router.post('/api/user/login', async ctx => {
       item => item.username === trimmedUsername && item.password === trimmedPassword
     )
 
-    if (!user) return { error: '用户名或密码错误' }
+    if (!user) return { error: 'Incorrect username or password' }
 
     const token = createId('token')
     db.sessions = db.sessions.filter(item => item.userId !== user.id)
@@ -533,23 +847,26 @@ router.post('/api/user/login', async ctx => {
 router.post('/api/question/duplicate/:id', async ctx => {
   const result = await updateDb(db => {
     const user = getCurrentUser(ctx, db)
-    if (!user) return { error: '请先登录', errno: 401 }
+    if (!user) return { error: 'Please login first', errno: 401 }
 
     const source = db.questions.find(item => item.id === ctx.params.id && item.userId === user.id)
-    if (!source) return { error: '问卷不存在', errno: 404 }
+    if (!source) return { error: 'Question not found', errno: 404 }
 
     const now = formatDate()
     const duplicated = {
       ...clone(source),
       id: createId('question'),
-      title: `${source.title} 副本`,
+      title: `${source.title} Copy`,
       isPublished: false,
+      publishedVersionId: '',
+      publishedAt: '',
       isDeleted: false,
       isStar: false,
       answerCount: 0,
       createdAt: now,
       updatedAt: now,
       componentList: resetComponentIds(source.componentList),
+      versions: [],
     }
 
     db.questions.unshift(duplicated)
@@ -564,22 +881,116 @@ router.post('/api/question/duplicate/:id', async ctx => {
   success(ctx, { id: result.id })
 })
 
+router.post('/api/question/publish/:id', async ctx => {
+  const result = await updateDb(db => {
+    const user = getCurrentUser(ctx, db)
+    if (!user) return { error: 'Please login first', errno: 401 }
+
+    const question = db.questions.find(item => item.id === ctx.params.id && item.userId === user.id)
+    if (!question) return { error: 'Question not found', errno: 404 }
+
+    const snapshot = createVersionSnapshotFromQuestion(question)
+    question.versions.push(snapshot)
+    question.publishedVersionId = snapshot.id
+    question.publishedAt = snapshot.createdAt
+    question.isPublished = true
+    question.updatedAt = snapshot.createdAt
+
+    return {
+      question: normaliseQuestionDraft(question),
+      version: {
+        id: snapshot.id,
+        versionNumber: snapshot.versionNumber,
+        createdAt: snapshot.createdAt,
+      },
+    }
+  })
+
+  if (result.error) {
+    fail(ctx, result.error, result.errno)
+    return
+  }
+
+  success(ctx, result)
+})
+
+router.get('/api/question/versions/:id', async ctx => {
+  const db = await readDb()
+  const user = requireUser(ctx, db)
+  if (!user) return
+
+  const question = db.questions.find(item => item.id === ctx.params.id && item.userId === user.id)
+  if (!question) {
+    fail(ctx, 'Question not found', 404)
+    return
+  }
+
+  success(ctx, {
+    list: normaliseVersionList(question),
+    publishedVersionId: question.publishedVersionId || '',
+    publishedAt: question.publishedAt || '',
+  })
+})
+
+router.post('/api/question/rollback/:id', async ctx => {
+  const { versionId = '' } = ctx.request.body || {}
+
+  const result = await updateDb(db => {
+    const user = getCurrentUser(ctx, db)
+    if (!user) return { error: 'Please login first', errno: 401 }
+
+    const question = db.questions.find(item => item.id === ctx.params.id && item.userId === user.id)
+    if (!question) return { error: 'Question not found', errno: 404 }
+
+    const targetVersion = getPublishedVersion(question, String(versionId))
+    if (!targetVersion) return { error: 'Version not found', errno: 404 }
+
+    const now = formatDate()
+    question.title = targetVersion.title
+    question.desc = targetVersion.desc
+    question.js = targetVersion.js
+    question.css = targetVersion.css
+    question.componentList = clone(targetVersion.componentList || [])
+    question.publishedVersionId = targetVersion.id
+    question.publishedAt = now
+    question.isPublished = true
+    question.updatedAt = now
+
+    return {
+      question: normaliseQuestionDraft(question),
+      currentVersionId: targetVersion.id,
+    }
+  })
+
+  if (result.error) {
+    fail(ctx, result.error, result.errno)
+    return
+  }
+
+  success(ctx, result)
+})
+
 router.get('/api/question/:id', async ctx => {
   const db = await readDb()
   const question = db.questions.find(item => item.id === ctx.params.id)
 
   if (!question) {
-    fail(ctx, '问卷不存在', 404)
+    fail(ctx, 'Question not found', 404)
     return
   }
 
-  success(ctx, normaliseQuestion(question))
+  const user = getCurrentUser(ctx, db)
+  const isOwner = Boolean(user && question.userId === user.id)
+  const requestedMode = ctx.query?.mode === 'published' ? 'published' : 'draft'
+  const shouldUseDraft = requestedMode === 'draft' && isOwner
+
+  success(ctx, shouldUseDraft ? normaliseQuestionDraft(question) : normaliseQuestionPublished(question))
 })
 
 router.post('/api/question', async ctx => {
   const result = await updateDb(db => {
     const user = getCurrentUser(ctx, db)
-    if (!user) return { error: '请先登录', errno: 401 }
+    if (!user) return { error: 'Please login first', errno: 401 }
 
     const question = createQuestion(user.id)
     db.questions.unshift(question)
@@ -650,12 +1061,12 @@ router.patch('/api/question/:id', async ctx => {
 
   const result = await updateDb(db => {
     const user = getCurrentUser(ctx, db)
-    if (!user) return { error: '请先登录', errno: 401 }
+    if (!user) return { error: 'Please login first', errno: 401 }
 
     const question = db.questions.find(item => item.id === ctx.params.id && item.userId === user.id)
-    if (!question) return { error: '问卷不存在', errno: 404 }
+    if (!question) return { error: 'Question not found', errno: 404 }
 
-    const allowedKeys = ['title', 'desc', 'js', 'css', 'isPublished', 'isDeleted', 'isStar']
+    const allowedKeys = ['title', 'desc', 'js', 'css', 'isDeleted', 'isStar']
     allowedKeys.forEach(key => {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
         question[key] = body[key]
@@ -683,7 +1094,7 @@ router.delete('/api/question', async ctx => {
 
   const result = await updateDb(db => {
     const user = getCurrentUser(ctx, db)
-    if (!user) return { error: '请先登录', errno: 401 }
+    if (!user) return { error: 'Please login first', errno: 401 }
 
     const ownedIds = new Set(
       db.questions.filter(item => item.userId === user.id).map(item => item.id)
@@ -705,13 +1116,15 @@ router.delete('/api/question', async ctx => {
 })
 
 router.post('/api/answer', async ctx => {
-  const { questionId = '', answerList = [] } = ctx.request.body || {}
+  const { questionId = '', versionId = '', answerList = [] } = ctx.request.body || {}
 
   const result = await updateDb(db => {
     const question = db.questions.find(item => item.id === questionId)
-    if (!question) return { error: '问卷不存在', errno: 404 }
-    if (question.isDeleted) return { error: '该问卷已删除', errno: 400 }
-    if (!question.isPublished) return { error: '该问卷尚未发布', errno: 400 }
+    if (!question) return { error: 'Question not found', errno: 404 }
+    if (question.isDeleted) return { error: 'Question has been deleted', errno: 400 }
+
+    const version = getPublishedVersion(question, String(versionId || question.publishedVersionId))
+    if (!version) return { error: 'Question has not been published', errno: 400 }
 
     const normalisedAnswerList = Array.isArray(answerList)
       ? answerList
@@ -722,15 +1135,21 @@ router.post('/api/answer', async ctx => {
           }))
       : []
 
-    db.answers.unshift({
+    const answerRecord = {
       id: createId('answer'),
       questionId,
+      versionId: version.id,
       createdAt: formatDate(),
       answerList: normalisedAnswerList,
-    })
+    }
+
+    db.answers.unshift(answerRecord)
 
     question.answerCount = Number(question.answerCount || 0) + 1
     question.updatedAt = formatDate()
+    version.answerCount = Number(version.answerCount || 0)
+    version.statSummary = normalizeVersionStatSummary(version.componentList, version.statSummary)
+    applyAnswerToVersionStats(version, answerRecord)
 
     return { ok: true }
   })
@@ -752,12 +1171,23 @@ router.get('/api/stat/:questionId/:componentId', async ctx => {
     item => item.id === ctx.params.questionId && item.userId === user.id
   )
   if (!question) {
-    fail(ctx, '问卷不存在', 404)
+    fail(ctx, 'Question not found', 404)
     return
   }
 
-  const answers = db.answers.filter(item => item.questionId === question.id)
-  const stat = buildComponentStat(question, ctx.params.componentId, answers)
+  const versionId = String(ctx.query?.versionId || question.publishedVersionId || '')
+  const publishedQuestion = getPublishedQuestionLike(question, versionId)
+  const version = getPublishedVersion(question, versionId)
+  if (!publishedQuestion) {
+    fail(ctx, 'Question has not been published', 400)
+    return
+  }
+  if (!version) {
+    fail(ctx, 'Published version not found', 404)
+    return
+  }
+
+  const stat = getVersionComponentStat(version, ctx.params.componentId)
 
   success(ctx, { stat })
 })
@@ -771,23 +1201,36 @@ router.get('/api/stat/:questionId', async ctx => {
     item => item.id === ctx.params.questionId && item.userId === user.id
   )
   if (!question) {
-    fail(ctx, '问卷不存在', 404)
+    fail(ctx, 'Question not found', 404)
+    return
+  }
+
+  const versionId = String(ctx.query?.versionId || question.publishedVersionId || '')
+  const publishedQuestion = getPublishedQuestionLike(question, versionId)
+  const version = getPublishedVersion(question, versionId)
+  if (!publishedQuestion) {
+    fail(ctx, 'Question has not been published', 400)
+    return
+  }
+  if (!version) {
+    fail(ctx, 'Published version not found', 404)
     return
   }
 
   const page = Math.max(1, Number(ctx.query?.page) || 1)
   const pageSize = Math.max(1, Number(ctx.query?.pageSize) || 10)
   const answers = db.answers
-    .filter(item => item.questionId === question.id)
+    .filter(item => item.questionId === question.id && item.versionId === versionId)
     .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
 
   const list = answers
     .slice((page - 1) * pageSize, page * pageSize)
-    .map(answer => buildStatRow(question, answer))
+    .map(answer => buildStatRow(publishedQuestion, answer))
 
   success(ctx, {
-    total: answers.length,
+    total: Number(version.answerCount || answers.length),
     list,
+    versionId,
   })
 })
 

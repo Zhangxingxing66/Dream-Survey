@@ -4,7 +4,7 @@ import { getComponent } from '@/components/QuestionComponents'
 import styles from '@/styles/Question.module.scss'
 
 type PropsType = {
-  errno: number,
+  errno: number
   data?: {
     id: string
     title: string
@@ -14,6 +14,7 @@ type PropsType = {
     isPublished: boolean
     isDeleted: boolean
     componentList: Array<any>
+    versionId?: string
   }
   msg?: string
 }
@@ -21,63 +22,79 @@ type PropsType = {
 export default function Question(props: PropsType) {
   const { errno, data, msg = '' } = props
 
-  // 数据错误
   if (errno !== 0) {
-    return <PageWrapper title="错误">
-      <h1>错误</h1>
-      <p>{msg}</p>
-    </PageWrapper>
+    return (
+      <PageWrapper title="Error">
+        <h1>Error</h1>
+        <p>{msg}</p>
+      </PageWrapper>
+    )
   }
 
-  const { id, title = '', desc = '', isDeleted, isPublished, componentList = [] } = data || {}
+  const {
+    id,
+    title = '',
+    desc = '',
+    js = '',
+    css = '',
+    isDeleted,
+    isPublished,
+    componentList = [],
+    versionId = '',
+  } = data || {}
 
-  // 已经被删除的，提示错误
   if (isDeleted) {
-    return <PageWrapper title={title} desc={desc}>
-      <h1>{title}</h1>
-      <p>该问卷已经被删除</p>
-    </PageWrapper>
+    return (
+      <PageWrapper title={title} desc={desc}>
+        <h1>{title}</h1>
+        <p>This survey has been deleted.</p>
+      </PageWrapper>
+    )
   }
 
-  // 尚未发布的，提示错误
   if (!isPublished) {
-    return <PageWrapper title={title} desc={desc}>
-      <h1>{title}</h1>
-      <p>该问卷尚未发布</p>
-    </PageWrapper>
+    return (
+      <PageWrapper title={title} desc={desc}>
+        <h1>{title}</h1>
+        <p>This survey is not published yet.</p>
+      </PageWrapper>
+    )
   }
-  
-  // 遍历组件
-  const ComponentListElem = <>
-    {componentList.map(c => {
-      const ComponentElem = getComponent(c)
-      return <div key={c.fe_id} className={styles.componentWrapper}>
-        {ComponentElem}
-      </div>
-    })}
-  </>
 
-  return <PageWrapper title={title} desc={desc}>
-    <form method='post' action="/api/answer">
-      <input type="hidden" name="questionId" value={id}/>
-      
-      {ComponentListElem}
+  const componentListElem = (
+    <>
+      {componentList.map(component => {
+        const componentElem = getComponent(component)
+        return (
+          <div key={component.fe_id} className={styles.componentWrapper}>
+            {componentElem}
+          </div>
+        )
+      })}
+    </>
+  )
 
-      <div className={styles.submitBtnContainer}>
-        {/* <input type="submit" value="提交"/> */}
-        <button type="submit">提交</button>
-      </div>
-    </form>
-  </PageWrapper>
+  return (
+    <PageWrapper title={title} desc={desc} css={css} js={js}>
+      <form method="post" action="/api/answer">
+        <input type="hidden" name="questionId" value={id} />
+        <input type="hidden" name="versionId" value={versionId} />
+
+        {componentListElem}
+
+        <div className={styles.submitBtnContainer}>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </PageWrapper>
+  )
 }
 
 export async function getServerSideProps(context: any) {
   const { id = '' } = context.params
-
-  // 根据 id 获取问卷数据
   const data = await getQuestionById(id)
 
   return {
-    props: data
+    props: data,
   }
 }

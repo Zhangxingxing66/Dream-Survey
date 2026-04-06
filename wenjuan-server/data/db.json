@@ -22,12 +22,293 @@
       "createdAt": "2026-04-06 19:33:07"
     },
     {
-      "token": "token_ce55094d7fa642d6bc9e2e8f6cd4ccf6",
+      "token": "token_59b1625494c5402884fe1022dec76c54",
       "userId": "user_01f9a31b1b7140e5842c34b14b4b3c7f",
-      "createdAt": "2026-04-06 19:51:46"
+      "createdAt": "2026-04-06 22:03:31"
     }
   ],
   "questions": [
+    {
+      "id": "question_460a8c672d184247b7bef90433e1e09b",
+      "userId": "user_01f9a31b1b7140e5842c34b14b4b3c7f",
+      "title": "Untitled Survey",
+      "desc": "Please complete the survey description",
+      "js": "",
+      "css": "",
+      "isDeleted": false,
+      "isPublished": true,
+      "publishedVersionId": "version_c9bf3b09aec14be9b782755576868e1a",
+      "publishedAt": "2026-04-06 22:04:27",
+      "isStar": false,
+      "answerCount": 0,
+      "createdAt": "2026-04-06 22:03:38",
+      "updatedAt": "2026-04-06 22:04:27",
+      "componentList": [
+        {
+          "fe_id": "cmp_115ddfd8846d4f9ea352692eb5fd532a",
+          "type": "questionInfo",
+          "title": "Question Info",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "Personal Survey",
+            "desc": "111."
+          }
+        },
+        {
+          "fe_id": "cmp_5ee3a337fd2142819fae228354c9484f",
+          "type": "questionTitle",
+          "title": "Title",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "text": "Welcome to this survey",
+            "level": 1,
+            "isCenter": false
+          }
+        },
+        {
+          "fe_id": "cmp_0d611fd5e5f1405695e04569b65251f0",
+          "type": "questionInput",
+          "title": "Input",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "Your name",
+            "placeholder": "",
+            "desc": "Please complete the questionnaire according to your real situation.",
+            "text": "Welcome to this survey",
+            "level": 1,
+            "isCenter": false
+          }
+        },
+        {
+          "fe_id": "cmp_51217a4fdfa44569883903606ddb4d05",
+          "type": "questionInput",
+          "title": "Input",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "Contact",
+            "placeholder": "Please enter phone or WeChat"
+          }
+        },
+        {
+          "fe_id": "cmp_45fa77d2fb9d41498303d130662717f3",
+          "type": "questionTextarea",
+          "title": "Textarea",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "Additional notes",
+            "placeholder": "You can add more details here"
+          }
+        },
+        {
+          "fe_id": "cmp_67f78dfaa65946179f6ad26d23cb576d",
+          "type": "questionParagraph",
+          "title": "Paragraph",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "text": "This survey is only used for collecting information. Thank you for your cooperation.",
+            "isCenter": false
+          }
+        },
+        {
+          "fe_id": "cmp_41b3358b376445a78a69b25c9d0f45db",
+          "type": "questionRadio",
+          "title": "Single Choice",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "Which communication method do you use most often?",
+            "isVertical": false,
+            "options": [
+              {
+                "value": "phone",
+                "text": "Phone"
+              },
+              {
+                "value": "wechat",
+                "text": "WeChat"
+              },
+              {
+                "value": "email",
+                "text": "Email"
+              }
+            ],
+            "value": ""
+          }
+        },
+        {
+          "fe_id": "cmp_21532ab35fd0463e9f33e5e6b629f37f",
+          "type": "questionCheckbox",
+          "title": "Multiple Choice",
+          "isHidden": false,
+          "isLocked": false,
+          "props": {
+            "title": "What content would you like to receive?",
+            "isVertical": false,
+            "list": [
+              {
+                "value": "news",
+                "text": "Event notices",
+                "checked": false
+              },
+              {
+                "value": "product",
+                "text": "Product updates",
+                "checked": false
+              },
+              {
+                "value": "tips",
+                "text": "Usage tips",
+                "checked": false
+              }
+            ]
+          }
+        }
+      ],
+      "versions": [
+        {
+          "id": "version_c9bf3b09aec14be9b782755576868e1a",
+          "versionNumber": 1,
+          "createdAt": "2026-04-06 22:04:27",
+          "title": "Untitled Survey",
+          "desc": "Please complete the survey description",
+          "js": "",
+          "css": "",
+          "componentList": [
+            {
+              "fe_id": "cmp_115ddfd8846d4f9ea352692eb5fd532a",
+              "type": "questionInfo",
+              "title": "Question Info",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "Personal Survey",
+                "desc": "111."
+              }
+            },
+            {
+              "fe_id": "cmp_5ee3a337fd2142819fae228354c9484f",
+              "type": "questionTitle",
+              "title": "Title",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "Welcome to this survey",
+                "level": 1,
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_0d611fd5e5f1405695e04569b65251f0",
+              "type": "questionInput",
+              "title": "Input",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "Your name",
+                "placeholder": "",
+                "desc": "Please complete the questionnaire according to your real situation.",
+                "text": "Welcome to this survey",
+                "level": 1,
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_51217a4fdfa44569883903606ddb4d05",
+              "type": "questionInput",
+              "title": "Input",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "Contact",
+                "placeholder": "Please enter phone or WeChat"
+              }
+            },
+            {
+              "fe_id": "cmp_45fa77d2fb9d41498303d130662717f3",
+              "type": "questionTextarea",
+              "title": "Textarea",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "Additional notes",
+                "placeholder": "You can add more details here"
+              }
+            },
+            {
+              "fe_id": "cmp_67f78dfaa65946179f6ad26d23cb576d",
+              "type": "questionParagraph",
+              "title": "Paragraph",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "This survey is only used for collecting information. Thank you for your cooperation.",
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_41b3358b376445a78a69b25c9d0f45db",
+              "type": "questionRadio",
+              "title": "Single Choice",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "Which communication method do you use most often?",
+                "isVertical": false,
+                "options": [
+                  {
+                    "value": "phone",
+                    "text": "Phone"
+                  },
+                  {
+                    "value": "wechat",
+                    "text": "WeChat"
+                  },
+                  {
+                    "value": "email",
+                    "text": "Email"
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "fe_id": "cmp_21532ab35fd0463e9f33e5e6b629f37f",
+              "type": "questionCheckbox",
+              "title": "Multiple Choice",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "What content would you like to receive?",
+                "isVertical": false,
+                "list": [
+                  {
+                    "value": "news",
+                    "text": "Event notices",
+                    "checked": false
+                  },
+                  {
+                    "value": "product",
+                    "text": "Product updates",
+                    "checked": false
+                  },
+                  {
+                    "value": "tips",
+                    "text": "Usage tips",
+                    "checked": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "question_07f189a05fe6473aaebb4386b738438b",
       "userId": "user_01f9a31b1b7140e5842c34b14b4b3c7f",
@@ -38,9 +319,9 @@
       "isDeleted": false,
       "isPublished": true,
       "isStar": false,
-      "answerCount": 1,
+      "answerCount": 3,
       "createdAt": "2026-04-06 19:54:56",
-      "updatedAt": "2026-04-06 19:56:06",
+      "updatedAt": "2026-04-06 21:55:17",
       "componentList": [
         {
           "fe_id": "cmp_11f7478c7e8941108a222a95fafc9f2e",
@@ -163,7 +444,143 @@
             "isCenter": false
           }
         }
-      ]
+      ],
+      "versions": [
+        {
+          "id": "version_4f28e398b7ac485c8c8f7c7e54bb56b9",
+          "versionNumber": 1,
+          "createdAt": "2026-04-06 19:56:06",
+          "title": "今日问卷",
+          "desc": "请完善问卷描述",
+          "js": "",
+          "css": "",
+          "componentList": [
+            {
+              "fe_id": "cmp_11f7478c7e8941108a222a95fafc9f2e",
+              "type": "questionInfo",
+              "title": "问卷信息",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "个人问卷",
+                "desc": "请根据实际情况填写问卷内容。"
+              }
+            },
+            {
+              "fe_id": "cmp_8c32518fe4aa4502a19542c31b6b4706",
+              "type": "questionTitle",
+              "title": "标题",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "欢迎参与本次调查",
+                "level": 1,
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_74935c0a06844c119e86ee2632c8330c",
+              "type": "questionInput",
+              "title": "输入框",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你的姓名",
+                "placeholder": "请输入姓名"
+              }
+            },
+            {
+              "fe_id": "cmp_a95c96b5ee8740f5b78529d0bf64b921",
+              "type": "questionInput",
+              "title": "输入框",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "联系方式",
+                "placeholder": "请输入手机号或微信"
+              }
+            },
+            {
+              "fe_id": "cmp_df57a75f5d33455fbd482cbb5f69ada6",
+              "type": "questionTextarea",
+              "title": "多行输入",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "补充说明",
+                "placeholder": "可以填写你的补充想法"
+              }
+            },
+            {
+              "fe_id": "cmp_8b2ae70540d74879a7f5e41f76b037b8",
+              "type": "questionRadio",
+              "title": "单选",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你最常使用的沟通方式是？",
+                "isVertical": false,
+                "options": [
+                  {
+                    "value": "phone",
+                    "text": "电话"
+                  },
+                  {
+                    "value": "wechat",
+                    "text": "微信"
+                  },
+                  {
+                    "value": "email",
+                    "text": "邮箱"
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "fe_id": "cmp_186b171a394745bdb3bdd05770ac57d1",
+              "type": "questionCheckbox",
+              "title": "多选",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你希望收到哪些内容？",
+                "isVertical": false,
+                "list": [
+                  {
+                    "value": "news",
+                    "text": "活动通知",
+                    "checked": false
+                  },
+                  {
+                    "value": "product",
+                    "text": "产品更新",
+                    "checked": false
+                  },
+                  {
+                    "value": "tips",
+                    "text": "使用技巧",
+                    "checked": false
+                  }
+                ]
+              }
+            },
+            {
+              "fe_id": "cmp_695132a7aed94131a1c8945610b3a0f4",
+              "type": "questionParagraph",
+              "title": "段落",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "本问卷仅用于个人收集信息。\n感谢你的配合。",
+                "isCenter": false
+              }
+            }
+          ]
+        }
+      ],
+      "publishedVersionId": "version_4f28e398b7ac485c8c8f7c7e54bb56b9",
+      "publishedAt": "2026-04-06 19:56:06"
     },
     {
       "id": "question_53cdcdca15df4d58b2b08cf1309cde2a",
@@ -300,7 +717,143 @@
             ]
           }
         }
-      ]
+      ],
+      "versions": [
+        {
+          "id": "version_c88d07db1ee7432fa5a4875cf1556daf",
+          "versionNumber": 1,
+          "createdAt": "2026-04-06 19:51:59",
+          "title": "社会调查",
+          "desc": "请完善问卷描述",
+          "js": "",
+          "css": "",
+          "componentList": [
+            {
+              "fe_id": "cmp_944081543f9b4cefb2a56d75dac67a9b",
+              "type": "questionInfo",
+              "title": "问卷信息",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "个人问卷",
+                "desc": "请根据实际情况填写问卷内容。"
+              }
+            },
+            {
+              "fe_id": "cmp_d84866212e4c43f2ac5823e4e9eec7b2",
+              "type": "questionTitle",
+              "title": "标题",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "欢迎参与本次调查",
+                "level": 1,
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_2ae5b9e86f8545ddae5f3ef39c528ee4",
+              "type": "questionInput",
+              "title": "输入框",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你的姓名",
+                "placeholder": ""
+              }
+            },
+            {
+              "fe_id": "cmp_d8b3616dd4904efe85ab45a6df179a50",
+              "type": "questionInput",
+              "title": "输入框",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "联系方式",
+                "placeholder": "请输入手机号或微信"
+              }
+            },
+            {
+              "fe_id": "cmp_74736a5d051c4b579f7dac81347ebd4d",
+              "type": "questionTextarea",
+              "title": "多行输入",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "补充说明",
+                "placeholder": "可以填写你的补充想法"
+              }
+            },
+            {
+              "fe_id": "cmp_6587bcac9b4a40ba8c7e3432d357f9ff",
+              "type": "questionParagraph",
+              "title": "段落",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "本问卷仅用于个人收集信息。\n感谢你的配合。",
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_a5932f40db02425db65891d42ce56b3a",
+              "type": "questionRadio",
+              "title": "单选",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你最常使用的沟通方式是？",
+                "isVertical": false,
+                "options": [
+                  {
+                    "value": "phone",
+                    "text": "电话"
+                  },
+                  {
+                    "value": "wechat",
+                    "text": "微信"
+                  },
+                  {
+                    "value": "email",
+                    "text": "邮箱"
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "fe_id": "cmp_92575d5e0520482796ebb7ed980e393c",
+              "type": "questionCheckbox",
+              "title": "多选",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "你希望收到哪些内容？",
+                "isVertical": false,
+                "list": [
+                  {
+                    "value": "news",
+                    "text": "活动通知",
+                    "checked": false
+                  },
+                  {
+                    "value": "product",
+                    "text": "产品更新",
+                    "checked": false
+                  },
+                  {
+                    "value": "tips",
+                    "text": "使用技巧",
+                    "checked": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "publishedVersionId": "version_c88d07db1ee7432fa5a4875cf1556daf",
+      "publishedAt": "2026-04-06 19:51:59"
     },
     {
       "id": "question_a4d188d6ce8b4eeaa165fc963a372394",
@@ -437,10 +990,170 @@
             ]
           }
         }
-      ]
+      ],
+      "versions": [
+        {
+          "id": "version_56700e892c144f0997fbb9fad20e064e",
+          "versionNumber": 1,
+          "createdAt": "2026-04-06 19:28:31",
+          "title": "????",
+          "desc": "????????",
+          "js": "",
+          "css": "",
+          "componentList": [
+            {
+              "fe_id": "cmp_31f756e827f440fc8718f953bce1e5e8",
+              "type": "questionInfo",
+              "title": "????",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "????",
+                "desc": "??????????????"
+              }
+            },
+            {
+              "fe_id": "cmp_c97f9beaa56047308ea30d792d3e630d",
+              "type": "questionTitle",
+              "title": "??",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "????????",
+                "level": 1,
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_1361ccdf14bf406a99c368dc26c6d10c",
+              "type": "questionInput",
+              "title": "???",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "????",
+                "placeholder": "?????"
+              }
+            },
+            {
+              "fe_id": "cmp_d551949bcb284b29af24e158e30dd5b9",
+              "type": "questionInput",
+              "title": "???",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "????",
+                "placeholder": "?????????"
+              }
+            },
+            {
+              "fe_id": "cmp_d2e31558b0724bb79d6bc74421db710f",
+              "type": "questionTextarea",
+              "title": "????",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "????",
+                "placeholder": "??????????"
+              }
+            },
+            {
+              "fe_id": "cmp_76bdc12942a8454b9565e77c9b08bb9a",
+              "type": "questionParagraph",
+              "title": "??",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "text": "?????????????\n???????",
+                "isCenter": false
+              }
+            },
+            {
+              "fe_id": "cmp_a646a90c643e48b9a45231d8616f97b2",
+              "type": "questionRadio",
+              "title": "??",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "????????????",
+                "isVertical": false,
+                "options": [
+                  {
+                    "value": "phone",
+                    "text": "??"
+                  },
+                  {
+                    "value": "wechat",
+                    "text": "??"
+                  },
+                  {
+                    "value": "email",
+                    "text": "??"
+                  }
+                ],
+                "value": ""
+              }
+            },
+            {
+              "fe_id": "cmp_77acf402e1ee43e38f6c0a3756b8a39b",
+              "type": "questionCheckbox",
+              "title": "??",
+              "isHidden": false,
+              "isLocked": false,
+              "props": {
+                "title": "??????????",
+                "isVertical": false,
+                "list": [
+                  {
+                    "value": "news",
+                    "text": "????",
+                    "checked": false
+                  },
+                  {
+                    "value": "product",
+                    "text": "????",
+                    "checked": false
+                  },
+                  {
+                    "value": "tips",
+                    "text": "????",
+                    "checked": false
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "publishedVersionId": "version_56700e892c144f0997fbb9fad20e064e",
+      "publishedAt": "2026-04-06 19:28:31"
     }
   ],
   "answers": [
+    {
+      "id": "answer_80acbd1a3e6142d7bc982966e97faa38",
+      "questionId": "question_07f189a05fe6473aaebb4386b738438b",
+      "versionId": "version_4f28e398b7ac485c8c8f7c7e54bb56b9",
+      "createdAt": "2026-04-06 21:55:17",
+      "answerList": [
+        {
+          "componentId": "cmp_8b2ae70540d74879a7f5e41f76b037b8",
+          "value": "phone"
+        }
+      ]
+    },
+    {
+      "id": "answer_630aa6086d554e12acb4584a4c54feb3",
+      "questionId": "question_07f189a05fe6473aaebb4386b738438b",
+      "versionId": "version_4f28e398b7ac485c8c8f7c7e54bb56b9",
+      "createdAt": "2026-04-06 21:54:54",
+      "answerList": [
+        {
+          "componentId": "cmp_8b2ae70540d74879a7f5e41f76b037b8",
+          "value": "phone"
+        }
+      ]
+    },
     {
       "id": "answer_dfd5eafd742e4d42b7d5eb92e526b28b",
       "questionId": "question_07f189a05fe6473aaebb4386b738438b",
@@ -466,7 +1179,8 @@
           "componentId": "cmp_186b171a394745bdb3bdd05770ac57d1",
           "value": "news"
         }
-      ]
+      ],
+      "versionId": "version_4f28e398b7ac485c8c8f7c7e54bb56b9"
     },
     {
       "id": "answer_9a51cdf36a044dd190cab00eb19d9652",
@@ -493,7 +1207,8 @@
           "componentId": "cmp_92575d5e0520482796ebb7ed980e393c",
           "value": "news"
         }
-      ]
+      ],
+      "versionId": "version_c88d07db1ee7432fa5a4875cf1556daf"
     },
     {
       "id": "answer_a31a4b6138434627abbcef27674f59fc",
@@ -512,7 +1227,8 @@
           "componentId": "cmp_77acf402e1ee43e38f6c0a3756b8a39b",
           "value": "news,product"
         }
-      ]
+      ],
+      "versionId": "version_56700e892c144f0997fbb9fad20e064e"
     }
   ]
 }

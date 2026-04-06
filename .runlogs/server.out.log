@@ -1,0 +1,5 @@
+
+> dream-survey-server@1.0.0 dev
+> node index.js
+
+Survey server running at http://localhost:3001

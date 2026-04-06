@@ -2,10 +2,11 @@ import React, { FC } from 'react'
 import { useDispatch } from 'react-redux'
 import useGetComponentInfo from '../../../hooks/useGetComponentInfo'
 import { getComponentConfByType, ComponentPropsType } from '../../../components/QuestionComponents'
+import SchemaForm from '../../../components/QuestionComponents/SchemaForm'
 import { changeComponentProps } from '../../../store/componentsReducer'
 
 const NoProp: FC = () => {
-  return <div style={{ textAlign: 'center' }}>未选中组件</div>
+  return <div style={{ textAlign: 'center' }}>No component selected</div>
 }
 
 const ComponentProp: FC = () => {
@@ -24,8 +25,15 @@ const ComponentProp: FC = () => {
     dispatch(changeComponentProps({ fe_id, newProps }))
   }
 
-  const { PropComponent } = componentConf
-  return <PropComponent {...props} onChange={changeProps} disabled={isLocked || isHidden} />
+  return (
+    <SchemaForm
+      fields={componentConf.propSchema}
+      value={props}
+      onChange={changeProps}
+      normalizeValue={componentConf.normalizeProps}
+      disabled={isLocked || isHidden}
+    />
+  )
 }
 
 export default ComponentProp

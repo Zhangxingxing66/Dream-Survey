@@ -12,37 +12,33 @@ import styles from './index.module.scss'
 
 const Stat: FC = () => {
   const nav = useNavigate()
-  const { loading } = useLoadQuestionData()
+  const { loading } = useLoadQuestionData('published')
   const { title, isPublished } = useGetPageInfo()
 
-  // 状态提升 selectedId type
   const [selectedComponentId, setSelectedComponentId] = useState('')
   const [selectedComponentType, setSelectedComponentType] = useState('')
 
-  // 修改标题
-  useTitle(`问卷统计 - ${title}`)
+  useTitle(`闂嵎缁熻 - ${title}`)
 
-  // loading 效果
-  const LoadingELem = (
+  const loadingElem = (
     <div style={{ textAlign: 'center', marginTop: '60px' }}>
       <Spin />
     </div>
   )
 
-  // Content Elem
   function genContentElem() {
     if (typeof isPublished === 'boolean' && !isPublished) {
       return (
         <div style={{ flex: '1' }}>
           <Result
             status="warning"
-            title="该页面尚未发布"
+            title="璇ラ〉闈㈠皻鏈彂甯?"
             extra={
               <Button type="primary" onClick={() => nav(-1)}>
-                返回
+                杩斿洖
               </Button>
             }
-          ></Result>
+          />
         </div>
       )
     }
@@ -77,7 +73,7 @@ const Stat: FC = () => {
     <div className={styles.container}>
       <StatHeader />
       <div className={styles['content-wrapper']}>
-        {loading && LoadingELem}
+        {loading && loadingElem}
         {!loading && <div className={styles.content}>{genContentElem()}</div>}
       </div>
     </div>

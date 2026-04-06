@@ -1,51 +1,66 @@
-import QuestionInput from "./QuestionInput"
-import QuestionRadio from "./QuestionRadio"
+import React from 'react'
+import QuestionInput from './QuestionInput'
+import QuestionRadio from './QuestionRadio'
 import QuestionTitle from './QuestionTitle'
 import QuestionParagraph from './QuestionParagraph'
-import QuestionInfo from "./QuestionInfo"
-import QuestionTextarea from "./QuestionTextarea"
-import QuestionCheckbox from "./QuestionCheckbox"
+import QuestionInfo from './QuestionInfo'
+import QuestionTextarea from './QuestionTextarea'
+import QuestionCheckbox from './QuestionCheckbox'
 
 type ComponentInfoType = {
   fe_id: string
   type: string
-  // title: string
-  isHidden: string
-  props: any
+  isHidden?: boolean
+  props: Record<string, any>
 }
 
-export const getComponent = (comp: ComponentInfoType) => {
-  const { fe_id, type, isHidden, props = {} } = comp
+type ClientComponentRegistryItem = {
+  type: string
+  render: (component: ComponentInfoType) => JSX.Element | null
+}
+
+const clientComponentRegistry: ClientComponentRegistryItem[] = [
+  {
+    type: 'questionInput',
+    render: component => <QuestionInput fe_id={component.fe_id} props={component.props as any} />,
+  },
+  {
+    type: 'questionRadio',
+    render: component => <QuestionRadio fe_id={component.fe_id} props={component.props as any} />,
+  },
+  {
+    type: 'questionTitle',
+    render: component => <QuestionTitle {...(component.props as any)} />,
+  },
+  {
+    type: 'questionParagraph',
+    render: component => <QuestionParagraph {...(component.props as any)} />,
+  },
+  {
+    type: 'questionInfo',
+    render: component => <QuestionInfo {...(component.props as any)} />,
+  },
+  {
+    type: 'questionTextarea',
+    render: component => <QuestionTextarea fe_id={component.fe_id} props={component.props as any} />,
+  },
+  {
+    type: 'questionCheckbox',
+    render: component => <QuestionCheckbox fe_id={component.fe_id} props={component.props as any} />,
+  },
+]
+
+export function getClientComponentByType(type: string) {
+  return clientComponentRegistry.find(item => item.type === type)
+}
+
+export const getComponent = (component: ComponentInfoType) => {
+  const { type, isHidden } = component
 
   if (isHidden) return null
 
-  if (type === 'questionInput') {
-    return <QuestionInput fe_id={fe_id} props={props} />
-  }
+  const registryItem = getClientComponentByType(type)
+  if (!registryItem) return null
 
-  if (type === 'questionRadio') {
-    return <QuestionRadio fe_id={fe_id} props={props} />
-  }
-
-  if (type === 'questionTitle') {
-    return <QuestionTitle {...props} />
-  }
-
-  if (type === 'questionParagraph') {
-    return <QuestionParagraph {...props} />
-  }
-
-  if (type === 'questionInfo') {
-    return <QuestionInfo {...props} />
-  }
-
-  if (type === 'questionTextarea') {
-    return <QuestionTextarea fe_id={fe_id} props={props} />
-  }
-
-  if (type === 'questionCheckbox') {
-    return <QuestionCheckbox fe_id={fe_id} props={props} />
-  }
-  
-  return null
+  return registryItem.render(component)
 }

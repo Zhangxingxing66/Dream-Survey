@@ -5,7 +5,7 @@ function genAnswerInfo(reqBody: any) {
   const answerList: any[] = []
 
   Object.keys(reqBody).forEach(key => {
-    if (key === 'questionId') return
+    if (key === 'questionId' || key === 'versionId') return
     answerList.push({
       componentId: key,
       value: reqBody[key],
@@ -14,13 +14,14 @@ function genAnswerInfo(reqBody: any) {
 
   return {
     questionId: reqBody.questionId || '',
+    versionId: reqBody.versionId || '',
     answerList,
   }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    res.status(200).json({ errno: -1, msg: 'Method 错误' })
+    res.status(200).json({ errno: -1, msg: 'Invalid method' })
     return
   }
 
