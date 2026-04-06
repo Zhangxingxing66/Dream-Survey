@@ -1,0 +1,23 @@
+.container {
+  width: min(1240px, calc(100vw - 48px));
+  margin: 28px auto 0;
+  display: flex;
+  gap: 24px;
+}
+
+.left {
+  width: 220px;
+  padding: 22px 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 18px 40px rgba(119, 176, 159, 0.12);
+}
+
+.right {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 28px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 18px 40px rgba(119, 176, 159, 0.12);
+}

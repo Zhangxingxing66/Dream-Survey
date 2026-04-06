@@ -1,0 +1,4 @@
+### 本资源由 itjc8.com 收集整理
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:

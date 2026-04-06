@@ -1,0 +1,8 @@
+ node_modules/
+  .next/
+  dist/
+  build/
+  coverage/
+  .env
+  .env.*
+  项目学习指南.md/

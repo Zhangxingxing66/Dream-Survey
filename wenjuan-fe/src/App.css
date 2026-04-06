@@ -1,0 +1,82 @@
+:root {
+  --fresh-bg: #f4fbf7;
+  --fresh-bg-soft: #eef9f2;
+  --fresh-mint: #78c2ad;
+  --fresh-leaf: #8fd19e;
+  --fresh-deep: #4f665d;
+  --fresh-title: #35564a;
+  --fresh-line: #d9ece3;
+  --fresh-shadow: 0 22px 60px rgba(109, 160, 144, 0.14);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--fresh-deep);
+  background:
+    radial-gradient(circle at top left, rgba(182, 231, 210, 0.9), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 232, 203, 0.82), transparent 24%),
+    linear-gradient(180deg, #f8fffb 0%, #f1faf5 52%, #edf7f2 100%);
+}
+
+a {
+  color: #5cae97;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #4a9c85;
+}
+
+.ant-layout {
+  background: transparent;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #8fd4be 0%, #73baa6 100%);
+  border: none;
+  box-shadow: 0 12px 28px rgba(115, 186, 166, 0.22);
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background: linear-gradient(135deg, #9adbc6 0%, #7ac5b0 100%) !important;
+}
+
+.ant-input,
+.ant-input-password,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: var(--fresh-line) !important;
+  box-shadow: none !important;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-affix-wrapper-focused {
+  border-color: #95d2c2 !important;
+}
+
+.ant-form-item-label > label,
+.ant-typography,
+.ant-btn {
+  color: var(--fresh-deep);
+}
+
+.ant-card,
+.ant-table,
+.ant-pagination .ant-pagination-item,
+.ant-modal-content,
+.ant-dropdown-menu {
+  box-shadow: var(--fresh-shadow);
+}
+
+div[role='button'] {
+  outline: 0;
+}

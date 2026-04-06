@@ -1,0 +1,31 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0 28px;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(217, 236, 227, 0.95);
+  box-shadow: 0 10px 30px rgba(120, 177, 160, 0.08);
+
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
+    display: flex;
+    align-items: center;
+    height: 64px;
+  }
+}
+
+.main {
+  min-height: calc(100vh - 64px - 74px);
+}
+
+.footer {
+  margin-top: 18px;
+  text-align: center;
+  color: #7b9a8f;
+  border-top: 1px solid rgba(217, 236, 227, 0.85);
+}

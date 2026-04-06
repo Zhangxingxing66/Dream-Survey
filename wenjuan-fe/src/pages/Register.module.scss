@@ -1,0 +1,26 @@
+.container {
+  min-height: calc(100vh - 64px - 74px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.card {
+  width: min(560px, 100%);
+  padding: 34px 30px 26px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 233, 205, 0.85), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 252, 247, 0.96) 100%);
+  box-shadow: 0 24px 52px rgba(122, 174, 159, 0.14);
+}
+
+.title {
+  margin-bottom: 22px;
+
+  p {
+    margin: 8px 0 0;
+    color: #759288;
+  }
+}
